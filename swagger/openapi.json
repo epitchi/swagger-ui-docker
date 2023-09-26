@@ -16,24 +16,22 @@
   ],
   "components": {
     "securitySchemes": {
-      "identity_server_auth": {
-        "type": "oauth2",
-        "flows": {
-          "implicit": {
-            "authorizationUrl": "https://demo.identityserver.io/connect/authorize",
-            "scopes": {
-              "api": "api"
-            }
-          }
-        }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Bearer YOUR_AUTHENTICATION_KEY"
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
       }
     }
   },
   "security": [
     {
-      "identity_server_auth": [
-        "api"
-      ]
+      "bearerAuth": []
     }
   ],
   "paths": {
@@ -47,7 +45,7 @@
         "operationId": "worker_profile_fetch",
         "requestBody": {
           "content": {
-            "application/octet-stream": {
+            "application/json": {
               "schema": {
                 "type": "string",
                 "format": "binary"
@@ -76,6 +74,9 @@
           },
           "400": {
             "description": "Invalid status value"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       }
