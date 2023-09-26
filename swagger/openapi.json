@@ -1,241 +1,124 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.0.3",
   "info": {
-    "version": "1.0.0",
-    "title": "Swagger Petstore",
-    "description": "A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification",
-    "termsOfService": "http://swagger.io/terms/",
+    "version": "0.0.1",
+    "title": "Thinkmay SDK",
+    "description": "Thinkmay is simplify Cloud-PC. Unlock the power of your Cloud-PC from anywhere, anytime, and any devices\n\nHere is our API. To make it easy to use our main service: \n- list all worker status \n- create worker remote session\n- deactivate worker remote session\n- show analytics worker session and remote session\n\nSome useful links:\n- [What is Thinkmay?](https://www.notion.so/thinkonmay/What-is-Thinkmay-57ef5071a5cc4d638584877f42957c34)",
     "contact": {
-      "name": "Swagger API Team",
-      "email": "apiteam@swagger.io",
-      "url": "http://swagger.io"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+      "email": "huyhoangdo@contact.thinkmay.net"
     }
   },
   "servers": [
     {
-      "url": "http://petstore.swagger.io/api"
+      "url": "https://supabase.thinkmay.net",
+      "description": "Identity Server API"
     }
   ],
-  "paths": {
-    "/pets": {
-      "get": {
-        "description": "Returns all pets from the system that the user has access to\nNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.\nSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.\n",
-        "operationId": "findPets",
-        "parameters": [
-          {
-            "name": "tags",
-            "in": "query",
-            "description": "tags to filter by",
-            "required": false,
-            "style": "form",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "maximum number of results to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "pet response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Pet"
-                  }
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
+  "components": {
+    "securitySchemes": {
+      "identity_server_auth": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://demo.identityserver.io/connect/authorize",
+            "scopes": {
+              "api": "api"
             }
           }
         }
-      },
+      }
+    }
+  },
+  "security": [
+    {
+      "identity_server_auth": [
+        "api"
+      ]
+    }
+  ],
+  "paths": {
+    "/worker_profile_fetch": {
       "post": {
-        "description": "Creates a new pet in the store.  Duplicates are allowed",
-        "operationId": "addPet",
+        "tags": [
+          "worker_profile_fetch"
+        ],
+        "summary": "Fetch All Worker Status",
+        "description": "Get all status info of worker from your side.",
+        "operationId": "worker_profile_fetch",
         "requestBody": {
-          "description": "Pet to add to the store",
-          "required": true,
           "content": {
-            "application/json": {
+            "application/octet-stream": {
               "schema": {
-                "$ref": "#/components/schemas/NewPet"
+                "type": "string",
+                "format": "binary"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "pet response",
+            "description": "successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet"
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "username": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+          "400": {
+            "description": "Invalid status value"
           }
         }
       }
     },
-    "/pets/{id}": {
-      "get": {
-        "description": "Returns a user based on a single ID, if the user does not have access to the pet",
-        "operationId": "find pet by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of pet to fetch",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
+    "/worker_session_create": {
+      "post": {
+        "tags": [
+          "worker_session_create"
         ],
+        "summary": "Create the remote session to worker",
+        "description": "You can use public, private ip or worker_ip to look up the worker for start remote session",
+        "operationId": "worker_session_create",
         "responses": {
           "200": {
-            "description": "pet response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Pet"
-                },
-                "example": {
-                  "id": 1,
-                  "name": "doggie",
-                  "tag": "dog"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "description": "deletes a single pet based on the ID supplied",
-        "operationId": "deletePet",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of pet to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "pet deleted"
-          },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "succesful operation"
           }
         }
       }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Pet": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/NewPet"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "properties": {
-              "id": {
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "NewPet": {
-        "required": [
-          "name"
+    },
+    "/worker_session_deactivate": {
+      "post": {
+        "tags": [
+          "worker_session_deactivate"
         ],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "tag": {
-            "type": "string"
+        "summary": "Deactive the remote session with session id",
+        "operationId": "worker_session_deactivate",
+        "responses": {
+          "200": {
+            "description": "succesful operation"
           }
         }
-      },
-      "Error": {
-        "required": [
-          "code",
-          "message"
+      }
+    },
+    "/analytics": {
+      "post": {
+        "tags": [
+          "analytics"
         ],
-        "properties": {
-          "code": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
+        "summary": "The analytics method to get the logging, number of session is created, number of hours being played, etc.. from your side",
+        "operationId": "analytics",
+        "responses": {
+          "200": {
+            "description": "successful operation"
           }
         }
       }
