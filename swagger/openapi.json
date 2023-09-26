@@ -120,38 +120,6 @@
       "Worker": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "example": 10
-          },
-          "petId": {
-            "type": "integer",
-            "format": "int64",
-            "example": 198772
-          },
-          "quantity": {
-            "type": "integer",
-            "format": "int32",
-            "example": 7
-          },
-          "shipDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "type": "string",
-            "description": "Order Status",
-            "example": "approved",
-            "enum": [
-              "placed",
-              "approved",
-              "delivered"
-            ]
-          },
-          "complete": {
-            "type": "boolean"
-          },
           "proxy_profile_id": {
             "type": "integer",
             "example": 139
@@ -345,6 +313,244 @@
                             "example": "41943c60c09c5116034f"
                           }
                         }
+                      }
+                    }
+                  }
+                },
+                "signaling_config": {
+                  "type": "object",
+                  "properties": {
+                    "Data": {
+                      "type": "object",
+                      "properties": {
+                        "URL": {
+                          "type": "string",
+                          "example": "wss://sing.thinkmay.net/api/handshake/data"
+                        },
+                        "Path": {
+                          "type": "string",
+                          "example": "/api/handshake/data"
+                        },
+                        "GrpcPort": {
+                          "type": "integer",
+                          "example": 14002
+                        }
+                      }
+                    },
+                    "Audio": {
+                      "type": "object",
+                      "properties": {
+                        "URL": {
+                          "type": "string",
+                          "example": "wss://sing.thinkmay.net/api/handshake/audio"
+                        },
+                        "Path": {
+                          "type": "string",
+                          "example": "/api/handshake/audio"
+                        },
+                        "GrpcPort": {
+                          "type": "integer",
+                          "example": 14001
+                        }
+                      }
+                    },
+                    "Video": {
+                      "type": "object",
+                      "properties": {
+                        "URL": {
+                          "type": "string",
+                          "example": "wss://sing.thinkmay.net/api/handshake/video"
+                        },
+                        "Path": {
+                          "type": "string",
+                          "example": "/api/handshake/video"
+                        },
+                        "GrpcPort": {
+                          "type": "integer",
+                          "example": 14000
+                        }
+                      }
+                    },
+                    "HostName": {
+                      "type": "string",
+                      "example": "sing.thinkmay.net"
+                    },
+                    "ValidationUrl": {
+                      "type": "string",
+                      "example": "https://avmvymkexjarplbxwlnj.functions.supabase.co/signaling_authenticate"
+                    }
+                  }
+                },
+                "media_config": {
+                  "type": "object",
+                  "properties": {
+                    "monitors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Width": {
+                            "type": "integer",
+                            "example": 1920
+                          },
+                          "Height": {
+                            "type": "integer",
+                            "example": 1080
+                          },
+                          "Adapter": {
+                            "type": "string",
+                            "example": "NVIDIA GeForce RTX 3060 Ti"
+                          },
+                          "pipeline": {
+                            "type": "object",
+                            "properties": {
+                              "Plugin": {
+                                "type": "string",
+                                "example": "nvcodec"
+                              },
+                              "PipelineHash": {
+                                "type": "string",
+                                "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI"
+                              },
+                              "PipelineString": {
+                                "type": "string",
+                                "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
+                              }
+                            }
+                          },
+                          "Framerate": {
+                            "type": "integer",
+                            "example": 60
+                          },
+                          "IsPrimary": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "DeviceName": {
+                            "type": "string",
+                            "example": "\\\\.\\DISPLAY6"
+                          },
+                          "MonitorName": {
+                            "type": "string",
+                            "example": "Linux FHD"
+                          },
+                          "MonitorHandle": {
+                            "type": "integer",
+                            "example": 65537
+                          }
+                        }
+                      }
+                    },
+                    "soundcard": {
+                      "type": "object",
+                      "properties": {
+                        "Api": {
+                          "type": "string",
+                          "example": "wasapi"
+                        },
+                        "Name": {
+                          "type": "string",
+                          "example": "CABLE Output (VB-Audio Virtual Cable)"
+                        },
+                        "DeviceID": {
+                          "type": "string",
+                          "example": "{0.0.1.00000000}.{1f50697c-67f6-4861-a965-96ad30a49a41}"
+                        },
+                        "pipeline": {
+                          "type": "object",
+                          "properties": {
+                            "Plugin": {
+                              "type": "string",
+                              "example": "wasapi"
+                            },
+                            "PipelineHash": {
+                              "type": "string",
+                              "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI="
+                            },
+                            "PipelneString": {
+                              "type": "string",
+                              "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "auth_config": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx"
+                    }
+                  }
+                },
+                "ended": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "start_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "last_check": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "metadata": {
+                  "type": "object",
+                  "example": {}
+                },
+                "url": {
+                  "type": "string",
+                  "example": "https://remote.thinkmay.net/?ref=ODkzOGQzODAtODhhZi00MTc4LWJiOGMtNmFiOGYxZTljZmYw"
+                },
+                "session_id": {
+                  "type": "integer",
+                  "example": 1085
+                },
+                "isActive": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "user_session": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "worker_session_id": {
+                        "type": "integer",
+                        "example": 1085
+                      },
+                      "user_session_id": {
+                        "type": "integer",
+                        "example": 6165
+                      },
+                      "user_email": {
+                        "type": "string",
+                        "example": "example@thinkmay.net"
+                      },
+                      "start_at": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "last_check": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "metadata": {
+                        "type": "object",
+                        "properties": {
+                          "reference": {
+                            "type": "string",
+                            "example": "ODkzOGQzODAtODhhZi00MTc4LWJiOGMtNmFiOGYxZTljZmYw"
+                          }
+                        }
+                      },
+                      "isActive": {
+                        "type": "boolean",
+                        "example": true
                       }
                     }
                   }
