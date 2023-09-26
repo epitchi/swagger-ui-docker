@@ -14,6 +14,94 @@
       "description": "Identity Server API"
     }
   ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/worker_profile_fetch": {
+      "post": {
+        "tags": [
+          "worker_profile_fetch"
+        ],
+        "summary": "Fetch All Worker Status",
+        "description": "Get all status info of worker from your side.",
+        "operationId": "worker_profile_fetch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Worker"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
+    "/worker_session_create": {
+      "post": {
+        "tags": [
+          "worker_session_create"
+        ],
+        "summary": "Create the remote session to worker",
+        "description": "You can use public, private ip or worker_ip to look up the worker for start remote session",
+        "operationId": "worker_session_create",
+        "responses": {
+          "200": {
+            "description": "succesful operation"
+          }
+        }
+      }
+    },
+    "/worker_session_deactivate": {
+      "post": {
+        "tags": [
+          "worker_session_deactivate"
+        ],
+        "summary": "Deactive the remote session with session id",
+        "operationId": "worker_session_deactivate",
+        "responses": {
+          "200": {
+            "description": "succesful operation"
+          }
+        }
+      }
+    },
+    "/analytics": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "The analytics method to get the logging, number of session is created, number of hours being played, etc.. from your side",
+        "operationId": "analytics",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -157,94 +245,112 @@
                 }
               }
             }
-          }
-        }
-      }
-    }
-  },
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/worker_profile_fetch": {
-      "post": {
-        "tags": [
-          "worker_profile_fetch"
-        ],
-        "summary": "Fetch All Worker Status",
-        "description": "Get all status info of worker from your side.",
-        "operationId": "worker_profile_fetch",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string",
-                "format": "binary"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Worker"
+          },
+          "media_device": {
+            "type": "object",
+            "properties": {
+              "monitors": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Width": {
+                      "type": "integer",
+                      "example": 1920
+                    },
+                    "Height": {
+                      "type": "integer",
+                      "example": 1080
+                    },
+                    "Adapter": {
+                      "type": "string",
+                      "example": "NVIDIA GeForce RTX 3060 Ti"
+                    },
+                    "pipeline": {
+                      "type": "object",
+                      "properties": {
+                        "Plugin": {
+                          "type": "string",
+                          "example": "nvcodec"
+                        },
+                        "PipelineHash": {
+                          "type": "string",
+                          "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI"
+                        },
+                        "PipelineString": {
+                          "type": "string",
+                          "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid status value"
+          "metadata": {
+            "type": "array",
+            "example": {},
+            "items": {
+              "type": "string"
+            }
           },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      }
-    },
-    "/worker_session_create": {
-      "post": {
-        "tags": [
-          "worker_session_create"
-        ],
-        "summary": "Create the remote session to worker",
-        "description": "You can use public, private ip or worker_ip to look up the worker for start remote session",
-        "operationId": "worker_session_create",
-        "responses": {
-          "200": {
-            "description": "succesful operation"
-          }
-        }
-      }
-    },
-    "/worker_session_deactivate": {
-      "post": {
-        "tags": [
-          "worker_session_deactivate"
-        ],
-        "summary": "Deactive the remote session with session id",
-        "operationId": "worker_session_deactivate",
-        "responses": {
-          "200": {
-            "description": "succesful operation"
-          }
-        }
-      }
-    },
-    "/analytics": {
-      "post": {
-        "tags": [
-          "analytics"
-        ],
-        "summary": "The analytics method to get the logging, number of session is created, number of hours being played, etc.. from your side",
-        "operationId": "analytics",
-        "responses": {
-          "200": {
-            "description": "successful operation"
+          "public_ip": {
+            "type": "string",
+            "example": "14.224.xx.xx"
+          },
+          "private_ip": {
+            "type": "string",
+            "example": "192.168.xx.xx"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "match_sessions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "worker_session_id": {
+                  "type": "integer",
+                  "example": 1085
+                },
+                "worker_profile_id": {
+                  "type": "integer",
+                  "example": 1085
+                },
+                "account_session_id": {
+                  "type": "string",
+                  "example": "8938d380-88af-4178-bb8c-6ab8f1e9cff0"
+                },
+                "webrtc_config": {
+                  "type": "object",
+                  "properties": {
+                    "iceServers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "urls": {
+                            "type": "string",
+                            "example": "turn:14.224.148.107:50561"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "9f827a4854de685d7175"
+                          },
+                          "credential": {
+                            "type": "string",
+                            "example": "41943c60c09c5116034f"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
