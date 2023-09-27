@@ -73,7 +73,7 @@
         }
       }
     },
-    "/functions/v1//worker_session_create": {
+    "/functions/v1/worker_session_create": {
       "post": {
         "tags": [
           "worker_session_create"
@@ -81,6 +81,43 @@
         "summary": "Create the remote session to worker",
         "description": "You can use public, private ip or worker_ip to look up the worker for start remote session",
         "operationId": "worker_session_create",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "header",
+            "description": "an authorization header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "worker_id": {
+                    "type": "integer",
+                    "example": 123
+                  },
+                  "public_ip": {
+                    "type": "string",
+                    "example": "103.168.xx.xx"
+                  },
+                  "private_ip": {
+                    "type": "string",
+                    "example": "192.168.xx.xx"
+                  },
+                  "reference_email": {
+                    "type": "string",
+                    "example": "test@gmail.com"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "succesful operation"
@@ -88,13 +125,38 @@
         }
       }
     },
-    "/functions/v1//worker_session_deactivate": {
+    "/functions/v1/worker_session_deactivate": {
       "post": {
         "tags": [
           "worker_session_deactivate"
         ],
         "summary": "Deactive the remote session with session id",
         "operationId": "worker_session_deactivate",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "header",
+            "description": "an authorization header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "worker_session_id": {
+                    "type": "string",
+                    "example": "1085"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "succesful operation"
@@ -102,13 +164,31 @@
         }
       }
     },
-    "/functions/v1//analytics": {
+    "/functions/v1/analytics": {
       "post": {
         "tags": [
           "analytics"
         ],
         "summary": "The analytics method to get the logging, number of session is created, number of hours being played, etc.. from your side",
         "operationId": "analytics",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "header",
+            "description": "an authorization header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {}
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "successful operation"
