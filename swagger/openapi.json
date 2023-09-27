@@ -20,7 +20,7 @@
     }
   ],
   "paths": {
-    "/worker_profile_fetch": {
+    "/functions/v1/worker_profile_fetch": {
       "post": {
         "tags": [
           "worker_profile_fetch"
@@ -28,12 +28,27 @@
         "summary": "Fetch All Worker Status",
         "description": "Get all status info of worker from your side.",
         "operationId": "worker_profile_fetch",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "header",
+            "description": "an authorization header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "string",
-                "format": "binary"
+                "properties": {
+                  "use_case": {
+                    "type": "string",
+                    "example": "sdk"
+                  }
+                }
               }
             }
           }
@@ -58,7 +73,7 @@
         }
       }
     },
-    "/worker_session_create": {
+    "/functions/v1//worker_session_create": {
       "post": {
         "tags": [
           "worker_session_create"
@@ -73,7 +88,7 @@
         }
       }
     },
-    "/worker_session_deactivate": {
+    "/functions/v1//worker_session_deactivate": {
       "post": {
         "tags": [
           "worker_session_deactivate"
@@ -87,7 +102,7 @@
         }
       }
     },
-    "/analytics": {
+    "/functions/v1//analytics": {
       "post": {
         "tags": [
           "analytics"
@@ -108,7 +123,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Bearer YOUR_AUTHENTICATION_KEY"
+        "description": "YOUR_AUTHENTICATION_KEY"
       }
     },
     "responses": {
