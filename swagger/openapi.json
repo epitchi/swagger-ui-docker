@@ -40,6 +40,7 @@
           }
         ],
         "requestBody": {
+          "description": "**wait_for** [optional]: if **wait_for** option exist, it will wait for a worker with specific public and private ip, after 3 minutes if the worker not exist, it will return a timeout message. \n\nOtherwise, it will return **{'target':[WorkerProfile]}**\n\nExample:\n**{\n  \"use_case\": \"sdk\",\n  \"wait_for\": {\n    \"worker\": {\n      \"public_ip\": \"144.14.xx.xx\",\n      \"private_ip\": \"192.168.xx.xx\"\n    }\n  }\n}**",
           "content": {
             "application/json": {
               "schema": {
@@ -93,6 +94,7 @@
           }
         ],
         "requestBody": {
+          "description": "You can choose between creating a new session with a worker specified by worker id, or creating a new session with a worker specify by public / private ip by using **worker_id** or **public_ip**  + **private_ip**",
           "content": {
             "application/json": {
               "schema": {
@@ -169,7 +171,8 @@
         "tags": [
           "analytics"
         ],
-        "summary": "The analytics method to get the logging, number of session is created, number of hours being played, etc.. from your side",
+        "summary": "Fetch all remote session of worker, user.",
+        "description": "The analytics method to get the logging, number of session is created, number of hours being played, etc.. from your side",
         "operationId": "analytics",
         "parameters": [
           {
@@ -191,7 +194,14 @@
         },
         "responses": {
           "200": {
-            "description": "successful operation"
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Analytics"
+                }
+              }
+            }
           }
         }
       }
@@ -212,6 +222,64 @@
       }
     },
     "schemas": {
+      "Analytics": {
+        "type": "object",
+        "properties": {
+          "formatted": {
+            "type": "string",
+            "example": "\"formatted\": \"\\nDaily report Wed Sep 27 2023\\n\\n---------------------------\\nremote time\\nRemoteTime:\\n  - account_id: 1cf60a1e-0ed9-418a-b1cb-84ac580848c4\\n    at: 'Tue, 26 Sep 2023 14:34:19 GMT'\\n    total_min: 7\\n  - account_id: 078a0f4b-7d10-45c6-a2d4-aca1bd2a9c6b\\n    at: 'Tue, 26 Sep 2023 14:41:35 GMT'\\n    total_min: 2\\n  - account_id: 078a0f4b-7d10-45c6-a2d4-aca1bd2a9c6b\\n    at: 'Tue, 26 Sep 2023 15:01:19 GMT'\\n    total_min: 41\\n  - account_id: 078a0f4b-7d10-45c6-a2d4-aca1bd2a9c6b\\n    at: 'Tue, 26 Sep 2023 19:05:16 GMT'\\n    total_min: 2\\n  - account_id: 078a0f4b-7d10-45c6-a2d44-aca1bd2a9c6b\\n    at: 'Wed, 27 Sep 2023 05:03:35 GMT'\\n    total_min: 3\\n\\n\\nTOTAL: 97 minutes\\n\\n21 remote session which last less than 1 min\\n---------------------------\\nworker time\\nWorkerTime:\\n  - id: 34.95.192.139 10.158.0.179 NVIDIA Tesla T4\\n    at: 'Tue, 26 Sep 2023 21:41:16 GMT'\\n    ended_at: 'Wed, 27 Sep 2023 03:30:47 GMT'\\n    total_min: 350\\n  - id: 34.95.252.241 10.158.0.25 NVIDIA Tesla T4\\n    at: 'Tue, 26 Sep 2023 21:44:47 GMT'\\n    ended_at: 'Wed, 27 Sep 2023 03:34:18 GMT'\\n    total_min: 350\\n  - id: 34.95.252.241 10.158.0.3 NVIDIA Tesla T4\\n    at: 'Tue, 26 Sep 2023 22:03:05 GMT'\\n    ended_at: 'Wed, 27 Sep 2023 03:52:36 GMT'\\n    total_min: 350\\n\\n\\nTOTAL: 88670 minutes\\n---------------------------\\n\","
+          },
+          "raw_data": {
+            "type": "object",
+            "properties": {
+              "remote_times": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "account_id": {
+                      "type": "string",
+                      "example": "1cf60a1e-0ed9-418a-b1cb-xxxxxx"
+                    },
+                    "at": {
+                      "type": "string",
+                      "example": "Tue, 26 Sep 2023 14:43:34 GMT"
+                    },
+                    "total_min": {
+                      "type": "integer",
+                      "example": 10
+                    }
+                  }
+                }
+              },
+              "worker_times": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "20.226.xx.xx 10.11.xx,xx NVIDIA Tesla T4"
+                    },
+                    "at": {
+                      "type": "string",
+                      "example": "Tue, 26 Sep 2023 14:43:34 GMT"
+                    },
+                    "ended_at": {
+                      "type": "string",
+                      "example": "Wed, 27 Sep 2023 03:30:47 GMT"
+                    },
+                    "total_min": {
+                      "type": "integer",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "Worker": {
         "type": "object",
         "properties": {
