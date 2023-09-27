@@ -122,7 +122,23 @@
         },
         "responses": {
           "200": {
-            "description": "succesful operation"
+            "description": "succesful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "example": "https://remote.thinkmay.net/?ref=ZTA2NGNhMGMtMjhmZS00YmZhLTkwYzktMmYXXXXXXXX"
+                    },
+                    "session_id": {
+                      "type": "integer",
+                      "example": 2058
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -316,23 +332,23 @@
               },
               "GPUs": {
                 "type": "array",
-                "example": {},
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "NVIDIA GeForce RTX 3060 Ti"
                 }
               },
               "NICs": {
                 "type": "array",
-                "example": {},
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "Intel(R) PRO/1000 MT Network Connection (virtual)"
                 }
               },
               "disks": {
                 "type": "array",
-                "example": {},
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "\\\\.\\PHYSICALDRIVE1 SSD (200GB) IDE [@unknown] vendor=(Standard disk drives) model=QEMU HARDDISK ATA Device serial=QM00002"
                 }
               },
               "Hostname": {
