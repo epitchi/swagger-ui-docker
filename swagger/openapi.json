@@ -25,7 +25,7 @@
         "tags": [
           "worker_profile_fetch"
         ],
-        "summary": "Fetch All Worker Status",
+        "summary": "Fetch all running worker",
         "description": "Get all status info of worker from your side.",
         "operationId": "worker_profile_fetch",
         "parameters": [
@@ -40,16 +40,11 @@
           }
         ],
         "requestBody": {
-          "description": "**wait_for** [optional]: if **wait_for** option exist, it will wait for a worker with specific public and private ip, after 3 minutes if the worker not exist, it will return a timeout message. \n\nOtherwise, it will return **{'target':[WorkerProfile]}**\n\nExample:\n**{\n  \"use_case\": \"sdk\",\n  \"wait_for\": {\n    \"worker\": {\n      \"public_ip\": \"144.14.xx.xx\",\n      \"private_ip\": \"192.168.xx.xx\"\n    }\n  }\n}**",
+          "description": "[**optional**] if **wait_for** field exist, the request will wait for any worker with specified public and private ip, after 3 minutes if the worker not exist, it will return a timeout message.",
           "content": {
             "application/json": {
               "schema": {
-                "properties": {
-                  "use_case": {
-                    "type": "string",
-                    "example": "sdk"
-                  }
-                }
+                "$ref": "#/components/schemas/FetchRequest"
               }
             }
           }
@@ -60,16 +55,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Worker"
+                  "$ref": "#/components/schemas/FetchResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid status value"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
+            "description": "Unsuccessful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -79,8 +78,8 @@
         "tags": [
           "worker_session_create"
         ],
-        "summary": "Create the remote session to worker",
-        "description": "You can use public, private ip or worker_ip to look up the worker for start remote session",
+        "summary": "Create remote session",
+        "description": "Create a remote session on a specified daemon, encoding pipeline could be run and multiple users can connect to the URL",
         "operationId": "worker_session_create",
         "parameters": [
           {
@@ -94,28 +93,11 @@
           }
         ],
         "requestBody": {
-          "description": "You can choose between creating a new session with a worker specified by worker id, or creating a new session with a worker specify by public / private ip by using **worker_id** or **public_ip**  + **private_ip**",
+          "description": "[**optional**] Creating a new session with a worker specified by worker id  **worker_id** \n\n\n\n [**optional**] Creating a new session with a worker specify by public / private ip by using **public_ip**  + **private_ip**  \n\n\n\n [**optional**] Create a new session with user reference in parameter, google login would be skipped **reference_email**",
           "content": {
             "application/json": {
               "schema": {
-                "properties": {
-                  "worker_id": {
-                    "type": "integer",
-                    "example": 123
-                  },
-                  "public_ip": {
-                    "type": "string",
-                    "example": "103.168.xx.xx"
-                  },
-                  "private_ip": {
-                    "type": "string",
-                    "example": "192.168.xx.xx"
-                  },
-                  "reference_email": {
-                    "type": "string",
-                    "example": "test@gmail.com"
-                  }
-                }
+                "$ref": "#/components/schemas/RemoteSessionRequest"
               }
             }
           }
@@ -126,16 +108,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "example": "https://remote.thinkmay.net/?ref=ZTA2NGNhMGMtMjhmZS00YmZhLTkwYzktMmYXXXXXXXX"
-                    },
-                    "session_id": {
-                      "type": "integer",
-                      "example": 2058
-                    }
-                  }
+                  "$ref": "#/components/schemas/RemoteSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsuccessful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -148,7 +131,7 @@
         "tags": [
           "worker_session_deactivate"
         ],
-        "summary": "Deactive the remote session with session id",
+        "summary": "Deactive remote session",
         "operationId": "worker_session_deactivate",
         "parameters": [
           {
@@ -177,7 +160,24 @@
         },
         "responses": {
           "200": {
-            "description": "succesful operation"
+            "description": "succesful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsuccessful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -187,8 +187,8 @@
         "tags": [
           "analytics"
         ],
-        "summary": "Fetch all remote session of worker, user.",
-        "description": "The analytics method to get the logging, number of session is created, number of hours being played, etc.. from your side",
+        "summary": "Usage analytics for one day period.",
+        "description": "Analytics show number of session is created, number of hours being played.",
         "operationId": "analytics",
         "parameters": [
           {
@@ -215,6 +215,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Analytics"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsuccessful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -296,271 +306,136 @@
           }
         }
       },
-      "Worker": {
+      "FetchRequest": {
         "type": "object",
         "properties": {
-          "proxy_profile_id": {
-            "type": "integer",
-            "example": 139
-          },
-          "worker_profile_id": {
-            "type": "integer",
-            "example": 139
-          },
-          "inserted_at": {
+          "use_case": {
             "type": "string",
-            "format": "date-time"
+            "example": "sdk"
           },
-          "last_check": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "hard_ware": {
+          "wait_for": {
             "type": "object",
             "properties": {
-              "CPU": {
-                "type": "string",
-                "example": "Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz"
-              },
-              "RAM": {
-                "type": "string",
-                "example": "16383Mb"
-              },
-              "BIOS": {
-                "type": "string",
-                "example": "bios vendor=SeaBIOS version=BOCHS  - 1"
-              },
-              "GPUs": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "example": "NVIDIA GeForce RTX 3060 Ti"
-                }
-              },
-              "NICs": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "example": "Intel(R) PRO/1000 MT Network Connection (virtual)"
-                }
-              },
-              "disks": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "example": "\\\\.\\PHYSICALDRIVE1 SSD (200GB) IDE [@unknown] vendor=(Standard disk drives) model=QEMU HARDDISK ATA Device serial=QM00002"
-                }
-              },
-              "Hostname": {
-                "type": "string",
-                "example": "ATLAS-9RSI819UT (OS Microsoft Windows 10 Pro) (arch x86_64) (kernel ver.10.0.19044 Build 19044) (platform ver.10.0.19044 Build 19044)"
-              },
-              "PublicIP": {
-                "type": "string",
-                "example": "14.224.xx.xx"
-              },
-              "PrivateIP": {
-                "type": "string",
-                "example": "192.168.xx.xx"
-              },
-              "timestamp": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "partitions": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "opts": {
-                      "type": "string",
-                      "example": "rw.compress"
-                    },
-                    "device": {
-                      "type": "string",
-                      "example": "C:"
-                    },
-                    "fstype": {
-                      "type": "string",
-                      "example": "NTFS"
-                    },
-                    "mountpoint": {
-                      "type": "string",
-                      "example": "C:"
-                    }
+              "worker": {
+                "type": "object",
+                "properties": {
+                  "public_ip": {
+                    "type": "string",
+                    "example": "192.168.1.1"
+                  },
+                  "private_ip": {
+                    "type": "string",
+                    "example": "192.168.1.1"
                   }
                 }
               }
             }
-          },
-          "media_device": {
-            "type": "object",
-            "properties": {
-              "monitors": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "Width": {
-                      "type": "integer",
-                      "example": 1920
-                    },
-                    "Height": {
-                      "type": "integer",
-                      "example": 1080
-                    },
-                    "Adapter": {
-                      "type": "string",
-                      "example": "NVIDIA GeForce RTX 3060 Ti"
-                    },
-                    "pipeline": {
-                      "type": "object",
-                      "properties": {
-                        "Plugin": {
-                          "type": "string",
-                          "example": "nvcodec"
-                        },
-                        "PipelineHash": {
-                          "type": "string",
-                          "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI"
-                        },
-                        "PipelineString": {
-                          "type": "string",
-                          "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "metadata": {
-            "type": "array",
-            "example": {},
-            "items": {
-              "type": "string"
-            }
-          },
-          "public_ip": {
-            "type": "string",
-            "example": "14.224.xx.xx"
-          },
-          "private_ip": {
-            "type": "string",
-            "example": "192.168.xx.xx"
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true
-          },
-          "match_sessions": {
+          }
+        }
+      },
+      "FetchResponse": {
+        "type": "object",
+        "properties": {
+          "active": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "worker_session_id": {
+                "proxy_profile_id": {
                   "type": "integer",
-                  "example": 1085
+                  "example": 139
                 },
                 "worker_profile_id": {
                   "type": "integer",
-                  "example": 1085
+                  "example": 139
                 },
-                "account_session_id": {
+                "inserted_at": {
                   "type": "string",
-                  "example": "8938d380-88af-4178-bb8c-6ab8f1e9cff0"
+                  "format": "date-time"
                 },
-                "webrtc_config": {
+                "last_check": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "hardware": {
                   "type": "object",
                   "properties": {
-                    "iceServers": {
+                    "CPU": {
+                      "type": "string",
+                      "example": "Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz"
+                    },
+                    "RAM": {
+                      "type": "string",
+                      "example": "16383Mb"
+                    },
+                    "BIOS": {
+                      "type": "string",
+                      "example": "bios vendor=SeaBIOS version=BOCHS  - 1"
+                    },
+                    "GPUs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "Parsec Virtual Display Adapter"
+                      }
+                    },
+                    "NICs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "Microsoft Kernel Debug Network Adapter (virtual)"
+                      }
+                    },
+                    "disks": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "\\\\\\\\.\\\\PHYSICALDRIVE2 SSD (150GB) SCSI [@unknown ] vendor=(Standard disk drives) model=Microsoft Virtual Disk serial="
+                      }
+                    },
+                    "Hostname": {
+                      "type": "string",
+                      "example": "ATLAS-9RSI819UT (OS Microsoft Windows 10 Pro) (arch x86_64) (kernel ver.10.0.19044 Build 19044) (platform ver.10.0.19044 Build 19044)"
+                    },
+                    "PublicIP": {
+                      "type": "string",
+                      "example": "14.224.xx.xx"
+                    },
+                    "PrivateIP": {
+                      "type": "string",
+                      "example": "192.168.xx.xx"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "partitions": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "urls": {
+                          "opts": {
                             "type": "string",
-                            "example": "turn:14.224.148.107:50561"
+                            "example": "rw.compress"
                           },
-                          "username": {
+                          "device": {
                             "type": "string",
-                            "example": "9f827a4854de685d7175"
+                            "example": "C:"
                           },
-                          "credential": {
+                          "fstype": {
                             "type": "string",
-                            "example": "41943c60c09c5116034f"
+                            "example": "NTFS"
+                          },
+                          "mountpoint": {
+                            "type": "string",
+                            "example": "C:"
                           }
                         }
                       }
                     }
                   }
                 },
-                "signaling_config": {
-                  "type": "object",
-                  "properties": {
-                    "Data": {
-                      "type": "object",
-                      "properties": {
-                        "URL": {
-                          "type": "string",
-                          "example": "wss://sing.thinkmay.net/api/handshake/data"
-                        },
-                        "Path": {
-                          "type": "string",
-                          "example": "/api/handshake/data"
-                        },
-                        "GrpcPort": {
-                          "type": "integer",
-                          "example": 14002
-                        }
-                      }
-                    },
-                    "Audio": {
-                      "type": "object",
-                      "properties": {
-                        "URL": {
-                          "type": "string",
-                          "example": "wss://sing.thinkmay.net/api/handshake/audio"
-                        },
-                        "Path": {
-                          "type": "string",
-                          "example": "/api/handshake/audio"
-                        },
-                        "GrpcPort": {
-                          "type": "integer",
-                          "example": 14001
-                        }
-                      }
-                    },
-                    "Video": {
-                      "type": "object",
-                      "properties": {
-                        "URL": {
-                          "type": "string",
-                          "example": "wss://sing.thinkmay.net/api/handshake/video"
-                        },
-                        "Path": {
-                          "type": "string",
-                          "example": "/api/handshake/video"
-                        },
-                        "GrpcPort": {
-                          "type": "integer",
-                          "example": 14000
-                        }
-                      }
-                    },
-                    "HostName": {
-                      "type": "string",
-                      "example": "sing.thinkmay.net"
-                    },
-                    "ValidationUrl": {
-                      "type": "string",
-                      "example": "https://avmvymkexjarplbxwlnj.functions.supabase.co/signaling_authenticate"
-                    }
-                  }
-                },
-                "media_config": {
+                "media_device": {
                   "type": "object",
                   "properties": {
                     "monitors": {
@@ -620,80 +495,85 @@
                         }
                       }
                     },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
                     "soundcard": {
-                      "type": "object",
-                      "properties": {
-                        "Api": {
-                          "type": "string",
-                          "example": "wasapi"
-                        },
-                        "Name": {
-                          "type": "string",
-                          "example": "CABLE Output (VB-Audio Virtual Cable)"
-                        },
-                        "DeviceID": {
-                          "type": "string",
-                          "example": "{0.0.1.00000000}.{1f50697c-67f6-4861-a965-96ad30a49a41}"
-                        },
-                        "pipeline": {
-                          "type": "object",
-                          "properties": {
-                            "Plugin": {
-                              "type": "string",
-                              "example": "wasapi"
-                            },
-                            "PipelineHash": {
-                              "type": "string",
-                              "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI="
-                            },
-                            "PipelneString": {
-                              "type": "string",
-                              "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Api": {
+                            "type": "string",
+                            "example": "wasapi"
+                          },
+                          "Name": {
+                            "type": "string",
+                            "example": "CABLE Output (VB-Audio Virtual Cable)"
+                          },
+                          "DeviceID": {
+                            "type": "string",
+                            "example": "{0.0.1.00000000}.{1f50697c-67f6-4861-a965-96ad30a49a41}"
+                          },
+                          "pipeline": {
+                            "type": "object",
+                            "properties": {
+                              "Plugin": {
+                                "type": "string",
+                                "example": "wasapi"
+                              },
+                              "PipelineHash": {
+                                "type": "string",
+                                "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI="
+                              },
+                              "PipelneString": {
+                                "type": "string",
+                                "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
+                              }
                             }
+                          }
+                        }
+                      }
+                    },
+                    "microphones": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Api": {
+                            "type": "string",
+                            "example": "wasapi-in"
+                          },
+                          "Name": {
+                            "type": "string",
+                            "example": "VoiceMeeter Input (VB-Audio VoiceMeeter VAIO)"
+                          },
+                          "DeviceID": {
+                            "type": "string",
+                            "example": "{0.0.1.00000000}.{1f50697c-67f6-4861-a965-96ad30a49a41}"
                           }
                         }
                       }
                     }
                   }
                 },
-                "auth_config": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string",
-                      "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx"
-                    }
+                "metadata": {
+                  "type": "array",
+                  "example": {},
+                  "items": {
+                    "type": "string"
                   }
                 },
-                "ended": {
-                  "type": "boolean",
-                  "example": false
-                },
-                "start_at": {
+                "public_ip": {
                   "type": "string",
-                  "format": "date-time"
+                  "example": "14.224.xx.xx"
                 },
-                "last_check": {
+                "private_ip": {
                   "type": "string",
-                  "format": "date-time"
+                  "example": "192.168.xx.xx"
                 },
-                "metadata": {
-                  "type": "object",
-                  "example": {}
-                },
-                "url": {
-                  "type": "string",
-                  "example": "https://remote.thinkmay.net/?ref=ODkzOGQzODAtODhhZi00MTc4LWJiOGMtNmFiOGYxZTljZmYw"
-                },
-                "session_id": {
-                  "type": "integer",
-                  "example": 1085
-                },
-                "isActive": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "user_session": {
+                "match_sessions": {
                   "type": "array",
                   "items": {
                     "type": "object",
@@ -702,13 +582,138 @@
                         "type": "integer",
                         "example": 1085
                       },
-                      "user_session_id": {
+                      "worker_profile_id": {
                         "type": "integer",
-                        "example": 6165
+                        "example": 1085
                       },
-                      "user_email": {
+                      "url": {
                         "type": "string",
-                        "example": "example@thinkmay.net"
+                        "example": "https://remote.thinkmay.net/?ref=ODkzOGQzODAtODhhZi00MTc4LWJiOGMtNmFiOxxxxxx"
+                      },
+                      "webrtc_config": {
+                        "type": "object",
+                        "properties": {
+                          "iceServers": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "urls": {
+                                  "type": "string",
+                                  "example": "turn:14.224.xx.xx:50561"
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "example": "9f827a4854de685d7175"
+                                },
+                                "credential": {
+                                  "type": "string",
+                                  "example": "41943c60c09c5116034f"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "media_config": {
+                        "type": "object",
+                        "properties": {
+                          "monitors": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "Width": {
+                                  "type": "integer",
+                                  "example": 1920
+                                },
+                                "Height": {
+                                  "type": "integer",
+                                  "example": 1080
+                                },
+                                "Adapter": {
+                                  "type": "string",
+                                  "example": "NVIDIA GeForce RTX 3060 Ti"
+                                },
+                                "pipeline": {
+                                  "type": "object",
+                                  "properties": {
+                                    "Plugin": {
+                                      "type": "string",
+                                      "example": "nvcodec"
+                                    },
+                                    "PipelineHash": {
+                                      "type": "string",
+                                      "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI"
+                                    },
+                                    "PipelineString": {
+                                      "type": "string",
+                                      "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
+                                    }
+                                  }
+                                },
+                                "Framerate": {
+                                  "type": "integer",
+                                  "example": 60
+                                },
+                                "IsPrimary": {
+                                  "type": "boolean",
+                                  "example": true
+                                },
+                                "DeviceName": {
+                                  "type": "string",
+                                  "example": "\\\\.\\DISPLAY6"
+                                },
+                                "MonitorName": {
+                                  "type": "string",
+                                  "example": "Linux FHD"
+                                },
+                                "MonitorHandle": {
+                                  "type": "integer",
+                                  "example": 65537
+                                }
+                              }
+                            }
+                          },
+                          "soundcard": {
+                            "type": "object",
+                            "properties": {
+                              "Api": {
+                                "type": "string",
+                                "example": "wasapi"
+                              },
+                              "Name": {
+                                "type": "string",
+                                "example": "CABLE Output (VB-Audio Virtual Cable)"
+                              },
+                              "DeviceID": {
+                                "type": "string",
+                                "example": "{0.0.1.00000000}.{1f50697c-67f6-4861-a965-96ad30a49a41}"
+                              },
+                              "pipeline": {
+                                "type": "object",
+                                "properties": {
+                                  "Plugin": {
+                                    "type": "string",
+                                    "example": "wasapi"
+                                  },
+                                  "PipelineHash": {
+                                    "type": "string",
+                                    "example": "Indhc2FwaXNyYyBuYW1lPXNvdXJjZSBkZXZpY2U9XCJcXHswLjAuMS4wMDAwMDAwMFxcfS5cXHsxZjUwNjk3Yy02N2Y2LTQ4NjEtYTk2NS05NmFkMzBhNDlhNDFcXH1cIiAhIGF1ZGlvcmVzYW1wbGUgISBhdWRpby94LXJhdyxyYXRlPTQ4MDAwICEgYXVkaW9jb252ZXJ0ICEgb3B1c2VuYyBuYW1lPWVuY29kZXIgISBhcHBzaW5rIG5hbWU9YXBwc2luayI="
+                                  },
+                                  "PipelneString": {
+                                    "type": "string",
+                                    "example": "wasapisrc name=source device=\"\\{0.0.1.00000000\\}.\\{1f50697c-67f6-4861-a965-96ad30a49a41\\}\" ! audioresample ! audio/x-raw,rate=48000 ! audioconvert ! opusenc name=encoder ! appsink name=appsink"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "ended": {
+                        "type": "boolean",
+                        "example": false
                       },
                       "start_at": {
                         "type": "string",
@@ -720,16 +725,31 @@
                       },
                       "metadata": {
                         "type": "object",
-                        "properties": {
-                          "reference": {
-                            "type": "string",
-                            "example": "ODkzOGQzODAtODhhZi00MTc4LWJiOGMtNmFiOGYxZTljZmYw"
+                        "example": {}
+                      },
+                      "user_session": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "user_session_id": {
+                              "type": "integer",
+                              "example": 6165
+                            },
+                            "user_email": {
+                              "type": "string",
+                              "example": "example@thinkmay.net"
+                            },
+                            "start_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "last_check": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
                           }
                         }
-                      },
-                      "isActive": {
-                        "type": "boolean",
-                        "example": true
                       }
                     }
                   }
@@ -738,6 +758,48 @@
             }
           }
         }
+      },
+      "RemoteSessionRequest": {
+        "type": "object",
+        "properties": {
+          "worker_id": {
+            "type": "integer",
+            "example": 123
+          },
+          "public_ip": {
+            "type": "string",
+            "example": "103.168.xx.xx"
+          },
+          "private_ip": {
+            "type": "string",
+            "example": "192.168.xx.xx"
+          },
+          "reference_email": {
+            "type": "string",
+            "example": "test@gmail.com"
+          }
+        }
+      },
+      "RemoteSession": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://remote.thinkmay.net"
+          },
+          "session_id": {
+            "type": "integer",
+            "example": 1234
+          }
+        }
+      },
+      "Error": {
+        "type": "string",
+        "example": "Operation did not success"
+      },
+      "Success": {
+        "type": "string",
+        "example": "Operation success"
       }
     }
   }
