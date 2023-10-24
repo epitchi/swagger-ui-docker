@@ -36,6 +36,16 @@
             "$ref": "#/components/parameters/proxy_password"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {}
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful operation",
