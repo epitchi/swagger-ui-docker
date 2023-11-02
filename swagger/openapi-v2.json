@@ -150,11 +150,11 @@
           }
         ],
         "requestBody": {
-          "description": "[**optional**] worker_id: Creating a new session with a worker specified by worker id  **worker_id** \n\n [**optional**] private_ip & public_ip: Creating a new session with a worker specify by public / private ip by using **public_ip**  + **private_ip**  \n\n [**optional**] reference_email: Create a new session with user reference in parameter, google login would be skipped **reference_email**\n \n [**optional**] metadata: To validate create session, it will return the same value in response.",
+          "description": "[**optional**] worker_id: Creating a new session with a worker specified by worker id  **worker_id** \n\n [**optional**] private_ip & public_ip: Creating a new session with a worker specify by public / private ip by using **public_ip**  + **private_ip**  \n\n [**optional**] reference_email: Create a new session with user reference in parameter, google login would be skipped **reference_email**\n \n [**optional**] metadata: To validate create session, it will return the same value in response.\n \n [**optional**] reuse_session: If you want to deactivate the old remote session and create a new one, set reuse_session= true",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RemoteSessionRequest"
+                "$ref": "#/components/schemas/WorkerCreateSessionReq"
               }
             }
           }
@@ -165,7 +165,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RemoteSession"
+                  "$ref": "#/components/schemas/WorkerSessionCreateResp"
                 }
               }
             }
@@ -220,53 +220,6 @@
                 "schema": {
                   "type": "string",
                   "example": "deactivated worker session 123"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unsuccessful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/analytics": {
-      "post": {
-        "tags": [
-          "analytics"
-        ],
-        "summary": "Usage analytics for one day period.",
-        "description": "Analytics show number of session is created, number of hours being played.",
-        "operationId": "analytics",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/proxy_username"
-          },
-          {
-            "$ref": "#/components/parameters/proxy_password"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "example": {}
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Analytics"
                 }
               }
             }
@@ -1026,7 +979,7 @@
           }
         }
       },
-      "RemoteSessionRequest": {
+      "WorkerCreateSessionReq": {
         "type": "object",
         "properties": {
           "worker_id": {
@@ -1041,6 +994,11 @@
             "type": "string",
             "example": "192.168.xx.xx"
           },
+          "reuse_session": {
+            "type": "boolean",
+            "example": false,
+            "nullable": true
+          },
           "reference_email": {
             "type": "string",
             "example": "test@gmail.com",
@@ -1053,7 +1011,7 @@
           }
         }
       },
-      "RemoteSession": {
+      "WorkerSessionCreateResp": {
         "type": "object",
         "properties": {
           "url": {
